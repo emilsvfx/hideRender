@@ -1,4 +1,3 @@
-
 bl_info = {
     "name": "Hide Render",
     "category": "3D View",
@@ -13,22 +12,39 @@ bl_info = {
 
 import bpy
 
+# Constants
+HIDE_VIEWPORT = "hide_viewport"
+HIDE_RENDER = "hide_render"
+
+def add_viewport_hide_driver(obj):
+    # Adds a driver to the 'hide_viewport' property of the object.
+    # The driver controls the property based on the object's 'hide_render' property.
+    try:
+        view = obj.driver_add(HIDE_VIEWPORT)
+    except Exception as e:
+        print(f"Failed to add driver to object {obj.name}: {e}")
+        return
+
+    drv = view.driver
+    drv.type = "AVERAGE"
+
+    hide_render_var = drv.variables.new()
+    hide_render_var.name = HIDE_RENDER
+    hide_render_var.type = 'SINGLE_PROP'
+    hide_render_var.targets[0].id_type = 'OBJECT'
+    hide_render_var.targets[0].id = obj
+    hide_render_var.targets[0].data_path = HIDE_RENDER 
+
 def main(context):
+    # Processes all selected objects in the current context
+    # and adds a viewport hide driver to them.
     sel_objs = bpy.context.selected_objects
     for obj in sel_objs:
-        view = obj.driver_add("hide_viewport")
-        drv = view.driver
-        drv.type= "AVERAGE"
-        newVar = drv.variables.new()
-        newVar.name = "hide_render"
-        newVar.type = 'SINGLE_PROP'
-        newVar.targets[0].id_type = 'OBJECT'
-        newVar.targets[0].id = obj
-        newVar.targets[0].data_path = 'hide_render' 
-        
-        
+        add_viewport_hide_driver(obj)
+
+
 class SimpleOperator(bpy.types.Operator):
-    """Hide Renders"""
+    # Blender Operator that hides selected objects in the viewport when the render toggle is off.
     bl_idname = "object.simple_operator"
     bl_label = "Hide Render"
 
@@ -38,6 +54,7 @@ class SimpleOperator(bpy.types.Operator):
 
 
 class LayoutDemoPanel(bpy.types.Panel):
+    # Blender Panel that provides a UI for the Hide Render operator in the 3D Viewport.
     bl_idname = "hide_render"
     bl_label = "Hide Render"
     bl_space_type = "VIEW_3D"
