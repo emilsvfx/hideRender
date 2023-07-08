@@ -4,10 +4,10 @@ bl_info = {
     "author": "Emils Geršisnskis - Ješinskis / EMILSVFX",
     "blender": (2,80,0),
     "location": "View3D",
-    "description":"Hide object from viewport when render toggle is off",
+    "description":"Hide an object from viewport when render toggle is off",
     "warning": "",
     "wiki_url":"https://github.com/emilsvfx/hideRender",
-    "version":(1,0,1)
+    "version":(1,0,2)
 }
 
 import bpy
